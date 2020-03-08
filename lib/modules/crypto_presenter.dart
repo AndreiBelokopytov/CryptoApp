@@ -3,7 +3,7 @@ import '../dependency_injection.dart';
 
 abstract class CryptoListViewContract {
   void onLoadCryptoComplete(List<Crypto> items);
-  void onLoadCryptoError();
+  void onLoadCryptoError(Object error);
 }
 
 class CryptoListPresenter {
@@ -18,6 +18,6 @@ class CryptoListPresenter {
     _repository
         .fetchCurrencies()
         .then(_view.onLoadCryptoComplete)
-        .catchError((onError) => _view.onLoadCryptoError());
+        .catchError(_view.onLoadCryptoError);
   }
 }

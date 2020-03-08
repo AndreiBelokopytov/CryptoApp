@@ -2,16 +2,16 @@ import 'dart:async';
 
 class Crypto {
   String name;
-  String price;
-  String percentChange;
+  double price;
+  double percentChange;
   String symbol;
 
   Crypto({this.name, this.price, this.percentChange, this.symbol});
 
   Crypto.fromJSON(Map<String, dynamic> map)
       : name = map['name'],
-        price = map['price_usd'],
-        percentChange = map['percent_change_1h'],
+        price = map['quote']['USD']['price'],
+        percentChange = map['quote']['USD']['percent_change_1h'],
         symbol = map['symbol'];
 }
 

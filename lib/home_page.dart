@@ -59,20 +59,22 @@ class _HomePageState extends State<HomePage> implements CryptoListViewContract {
     return ListTile(
       leading: FadeInImage(
           placeholder: AssetImage('assets/2.0x/stars.png'),
-          image: NetworkImage("http://cryptoicons.co/32@2x/color/${currency.symbol?.toLowerCase()}@2x.png")),
+          image: NetworkImage("https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@9867bdb19da14e63ffbe63805298fa60bf255cdd/32@2x/color/${currency.symbol?.toLowerCase()}@2x.png")),
       title: Text(currency.name, style: TextStyle(fontWeight: FontWeight.bold)),
       subtitle: _getSubtitleText(currency.price, currency.percentChange),
       isThreeLine: true,
     );
   }
 
-  Widget _getSubtitleText(String priceUSD, String percentageChange) {
+  Widget _getSubtitleText(double priceUSD, double percentageChange) {
     var priceTextWidget =
-        TextSpan(text: "\$$priceUSD\n", style: TextStyle(color: Colors.black));
-    var percentageChangeText = "1 hour: $percentageChange%";
+        TextSpan(text: "\$${priceUSD.toStringAsFixed(2)}\n", 
+          style: TextStyle(color: Colors.black));
+    var percentageChangeText =
+      "1 hour: ${percentageChange.toStringAsFixed(2)}%";
     TextSpan percentageChangeTextWidget;
 
-    if (double.parse(percentageChange) > 0) {
+    if (percentageChange > 0) {
       percentageChangeTextWidget = TextSpan(
           text: percentageChangeText, style: TextStyle(color: Colors.green));
     } else {
@@ -87,8 +89,6 @@ class _HomePageState extends State<HomePage> implements CryptoListViewContract {
 
   @override
   void onLoadCryptoComplete(List<Crypto> items) {
-    // TODO: implement onLoadCryptoComplete
-
     setState(() {
       _currencies = items;
       _isLoading = false;
@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> implements CryptoListViewContract {
   }
 
   @override
-  void onLoadCryptoError() {
+  void onLoadCryptoError(Object error) {
     // TODO: implement onLoadCryptoError
   }
 }

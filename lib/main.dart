@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dependency_injection.dart';
 import 'home_page.dart';
 
 void main() async {
-  Injector.configure(Flavor.mock);
+  await DotEnv().load('.env');
+  Injector.configure(Flavor.prod);
   runApp(MyApp());
 }
 

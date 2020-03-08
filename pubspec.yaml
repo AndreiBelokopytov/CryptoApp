@@ -13,6 +13,7 @@ dependencies:
 
 dev_dependencies:
   effective_dart: ^1.0.0
+  flutter_dotenv: ^2.1.0
   flutter_test:
     sdk: flutter
 
@@ -34,6 +35,7 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
       - assets/2.0x/stars.png
+      - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

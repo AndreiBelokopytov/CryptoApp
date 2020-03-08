@@ -1,12 +1,12 @@
-import 'package:fluttercrypto/data/crypto_data.dart';
-import 'package:fluttercrypto/data/crypto_data_mock.dart';
-import 'package:fluttercrypto/data/crypto_data_prod.dart';
+import 'data/crypto_data.dart';
+import 'data/crypto_data_mock.dart';
+import 'data/crypto_data_prod.dart';
 
-enum Flavor { MOCK, PROD }
+enum Flavor { mock, prod }
 
 //DI
 class Injector {
-  static final Injector _singleton = new Injector._internal();
+  static final Injector _singleton = Injector._internal();
   static Flavor _flavor;
 
   static void configure(Flavor flavor) {
@@ -21,10 +21,10 @@ class Injector {
 
   CryptoRepository get cryptoRepository {
     switch (_flavor) {
-      case Flavor.MOCK:
-        return new MockCryptoRepository();
+      case Flavor.mock:
+        return MockCryptoRepository();
       default:
-        return new ProdCryptoRepository();
+        return ProdCryptoRepository();
     }
   }
 }

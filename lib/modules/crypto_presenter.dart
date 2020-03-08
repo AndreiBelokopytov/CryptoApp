@@ -1,5 +1,5 @@
-import 'package:fluttercrypto/data/crypto_data.dart';
-import 'package:fluttercrypto/dependency_injection.dart';
+import '../data/crypto_data.dart';
+import '../dependency_injection.dart';
 
 abstract class CryptoListViewContract {
   void onLoadCryptoComplete(List<Crypto> items);
@@ -7,17 +7,17 @@ abstract class CryptoListViewContract {
 }
 
 class CryptoListPresenter {
-  CryptoListViewContract _view;
+  final CryptoListViewContract _view;
   CryptoRepository _repository;
 
   CryptoListPresenter(this._view) {
-    _repository = new Injector().cryptoRepository;
+    _repository = Injector().cryptoRepository;
   }
 
   void loadCurrencies() {
     _repository
         .fetchCurrencies()
-        .then((c) => _view.onLoadCryptoComplete(c))
+        .then(_view.onLoadCryptoComplete)
         .catchError((onError) => _view.onLoadCryptoError());
   }
 }

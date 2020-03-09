@@ -47,7 +47,7 @@ class CryptoListItem extends StatelessWidget {
         width: imageSize,
         height: imageSize,
         imageUrl:
-            "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@9867bdb19da14e63ffbe63805298fa60bf255cdd/32@2x/color/${currency.symbol?.toLowerCase()}@2x.png",
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/${currency.id}.png",
         placeholder: (context, url) => placeholder,
         errorWidget: (context, url, error) => errorImage,
       ),

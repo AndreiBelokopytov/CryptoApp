@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttercrypto/bottom_loader.dart';
 import 'bloc/currencies_bloc.dart';
+import 'bottom_loader.dart';
 import 'crypto_list_item.dart';
 import 'data/crypto_data.dart';
 
-typedef OnLoadNextPage = void Function({int page});
+typedef OnLoadNextPage = void Function(int page);
 
 class CurrenciesList extends StatefulWidget {
   final CurrenciesState currenciesState;
@@ -26,6 +26,7 @@ class CurrenciesListState extends State<CurrenciesList> {
   @override
   void initState() {
     super.initState();
+    widget.onLoadNextPage(1);
     _scrollController.addListener(_onScroll);
   }
 
@@ -69,7 +70,7 @@ class CurrenciesListState extends State<CurrenciesList> {
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
       if (maxScroll - currentScroll <= _scrollThreshold) {
-        onLoadNextPage(page: state.page + 1);
+        onLoadNextPage(state.page + 1);
       }
     }
   }

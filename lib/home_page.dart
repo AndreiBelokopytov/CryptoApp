@@ -7,10 +7,10 @@ import 'providers/bloc_provider.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final _bloc = BlocProvider.of<CurrenciesBloc>(context);
+    final bloc = BlocProvider.of<CurrenciesBloc>(context);
 
     return StreamBuilder<CurrenciesState>(
-        stream: _bloc.currencies,
+        stream: bloc.state,
         builder: (context, snapshot) {
           return Scaffold(
               appBar: AppBar(
@@ -20,7 +20,7 @@ class HomePage extends StatelessWidget {
               ),
               body: CurrenciesList(
                   currenciesState: snapshot.data,
-                  onLoadNextPage: _bloc.fetchCurrencies));
+                  onLoadNextPage: (page) => bloc.page.add(page)));
         });
   }
 }

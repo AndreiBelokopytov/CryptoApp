@@ -8,12 +8,27 @@ class CurrenciesBloc implements Bloc {
   final CryptoRepository _repository;
   final _currenciesController =
       BehaviorSubject<CurrenciesState>.seeded(CurrenciesUninitialized());
+  final _pageController = StreamController<int>();
 
-  Stream<CurrenciesState> get currencies => _currenciesController.stream;
+  Stream<CurrenciesState> get state => _currenciesController.stream;
+  Sink<int> get page => _pageController.sink;
 
   CurrenciesBloc() : _repository = Injector().cryptoRepository;
 
-  Future<void> fetchCurrencies({int page = 1}) async {
+  @override
+  void init() {
+    _pageController.stream.listen((page) => {
+      _fetchCurrencies(page)
+    });
+  }
+
+  @override
+  void dispose() {
+    _currenciesController.close();
+    _pageController.close();
+  }
+  
+  Future<void> _fetchCurrencies(int page) async {
     List<Crypto> currencies;
     final lastState = _currenciesController.value;
 
@@ -23,10 +38,10 @@ class CurrenciesBloc implements Bloc {
       }
 
       _currenciesController.add(CurrenciesLoaded(
-          currencies: lastState.currencies,
-          page: lastState.page,
-          allCurrenciesLoaded: lastState.allCurrenciesLoaded,
-          loading: true));
+        currencies: lastState.currencies,
+        page: lastState.page,
+        allCurrenciesLoaded: lastState.allCurrenciesLoaded,
+        loading: true));
     }
 
     try {
@@ -40,16 +55,6 @@ class CurrenciesBloc implements Bloc {
       if (lastState is CurrenciesLoaded) ...lastState.currencies,
       ...currencies
     ], page: page, allCurrenciesLoaded: _repository.allCurrenciesLoaded));
-  }
-
-  @override
-  void init() {
-    fetchCurrencies();
-  }
-
-  @override
-  void dispose() {
-    _currenciesController.close();
   }
 }
 

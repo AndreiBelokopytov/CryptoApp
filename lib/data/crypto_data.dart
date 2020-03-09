@@ -16,7 +16,8 @@ class Crypto {
 }
 
 abstract class CryptoRepository {
-  Future<List<Crypto>> fetchCurrencies();
+  bool get allCurrenciesLoaded;
+  Future<List<Crypto>> fetchCurrencies({int page});
 }
 
 class FetchDataException implements Exception {

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'bloc/currencies_block.dart';
+import 'bloc/currencies_bloc.dart';
 import 'dependency_injection.dart';
 import 'home_page.dart';
 import 'providers/bloc_provider.dart';
@@ -13,6 +13,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final CurrenciesBloc currenciesBloc = CurrenciesBloc();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
           primaryColor: defaultTargetPlatform == TargetPlatform.iOS
               ? Colors.grey[100]
               : null),
-      home: BlocProvider(bloc: CurrenciesBlock(), child: HomePage())
+      home: BlocProvider(bloc: currenciesBloc, child: HomePage())
     );
   }
 }

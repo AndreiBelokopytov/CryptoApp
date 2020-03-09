@@ -21,7 +21,6 @@ class _BlocProviderState extends State<BlocProvider> {
   @override
   Widget build(BuildContext context) => widget.child;
 
-
   @override
   void initState() {
     super.initState();

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'currencies_list.dart';
 import 'data/crypto_data.dart';
 
 class CryptoListItem extends StatelessWidget {
@@ -15,8 +16,13 @@ class CryptoListItem extends StatelessWidget {
   ];
 
   final Crypto currency;
+  final bool favorite;
+  final OnToggleFavorite onToggleFavorite;
 
-  CryptoListItem(this.currency);
+  CryptoListItem(
+      {@required this.currency,
+      @required this.favorite,
+      @required this.onToggleFavorite});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +59,12 @@ class CryptoListItem extends StatelessWidget {
       ),
       title: Text(currency.name, style: TextStyle(fontWeight: FontWeight.bold)),
       subtitle: _getSubtitleText(currency.price, currency.percentChange),
+      trailing: Icon(
+        // Add the lines from here...
+        favorite ? Icons.star : Icons.star_border,
+        color: favorite ? Colors.amber : null,
+      ),
+      onTap: () => onToggleFavorite(currency.id),
       isThreeLine: true,
     );
   }

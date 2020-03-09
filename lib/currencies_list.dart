@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'bloc/currencies_bloc.dart';
 import 'bottom_loader.dart';
 import 'crypto_list_item.dart';
-import 'data/crypto_data.dart';
 
 typedef OnLoadNextPage = void Function(int page);
+typedef OnToggleFavorite = void Function(int id);
 
 class CurrenciesList extends StatefulWidget {
+  final Set<int> favorites;
   final CurrenciesState currenciesState;
   final OnLoadNextPage onLoadNextPage;
+  final OnToggleFavorite onToggleFavorite;
 
-  CurrenciesList({this.currenciesState, this.onLoadNextPage});
+  CurrenciesList(
+      {@required this.currenciesState,
+      @required this.favorites,
+      @required this.onLoadNextPage,
+      @required this.onToggleFavorite});
 
   @override
   State createState() => CurrenciesListState();
@@ -33,6 +39,7 @@ class CurrenciesListState extends State<CurrenciesList> {
   @override
   Widget build(BuildContext context) {
     final state = widget.currenciesState;
+
     if (state is CurrenciesLoaded) {
       return ListView.builder(
         itemCount: state.allCurrenciesLoaded
@@ -40,7 +47,7 @@ class CurrenciesListState extends State<CurrenciesList> {
             : state.currencies.length + 1,
         itemBuilder: (context, index) => index >= state.currencies.length
             ? BottomLoader()
-            : _getRowWithDivider(state.currencies[index]),
+            : _getRowWithDivider(index),
         controller: _scrollController,
       );
     } else {
@@ -50,9 +57,18 @@ class CurrenciesListState extends State<CurrenciesList> {
     }
   }
 
-  Widget _getRowWithDivider(Crypto currency) {
+  Widget _getRowWithDivider(int index) {
+    final currency =
+        (widget.currenciesState as CurrenciesLoaded).currencies[index];
+    final favorites = widget.favorites;
     final children = <Widget>[
-      Padding(padding: EdgeInsets.all(10.0), child: CryptoListItem(currency)),
+      Padding(
+          padding: EdgeInsets.all(10.0),
+          child: CryptoListItem(
+            currency: currency,
+            favorite: favorites.contains(currency.id),
+            onToggleFavorite: widget.onToggleFavorite,
+          )),
       const Divider(height: 5.0),
     ];
 

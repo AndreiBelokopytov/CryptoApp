@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'bloc/currencies_block.dart';
 import 'dependency_injection.dart';
 import 'home_page.dart';
+import 'providers/bloc_provider.dart';
 
 void main() async {
   await DotEnv().load('.env');
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
           primaryColor: defaultTargetPlatform == TargetPlatform.iOS
               ? Colors.grey[100]
               : null),
-      home: HomePage(),
+      home: BlocProvider(bloc: CurrenciesBlock(), child: HomePage())
     );
   }
 }

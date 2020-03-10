@@ -6,7 +6,8 @@ class MockCryptoRepository implements CryptoRepository {
   bool get allCurrenciesLoaded => true;
 
   @override
-  Future<List<Crypto>> fetchCurrencies({int page = 1}) {
+  Future<List<Crypto>> fetchCurrencies(
+      {int page = 1, CryptoType type = CryptoType.all}) {
     return Future.value(currencies);
   }
 }

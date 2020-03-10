@@ -25,12 +25,16 @@ class HomePage extends StatelessWidget {
                 elevation:
                     defaultTargetPlatform == TargetPlatform.iOS ? 0.0 : 5.0,
               ),
-              body: CurrenciesList(
-                currenciesState: snapshot.data.currenciesState,
-                favorites: snapshot.data.favorites,
-                onLoadNextPage: (page) => currenciesBloc.page.add(page),
-                onToggleFavorite: (id) => favoritesBloc.favoriteItem.add(id),
-              ));
+              body: snapshot.hasData
+                  ? CurrenciesList(
+                      currenciesState: snapshot.data.currenciesState,
+                      favorites: snapshot.data.favorites,
+                      onLoadNextPage: (page) => currenciesBloc.page.add(page),
+                      onToggleFavorite: (id) =>
+                          favoritesBloc.favoriteItem.add(id),
+                      onFilter: (type) => currenciesBloc.type.add(type),
+                    )
+                  : null);
         });
   }
 }

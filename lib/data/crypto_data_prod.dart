@@ -15,12 +15,27 @@ class ProdCryptoRepository implements CryptoRepository {
   bool get allCurrenciesLoaded => _allCurrenciesLoaded;
 
   @override
-  Future<List<Crypto>> fetchCurrencies({int page = 1}) async {
+  Future<List<Crypto>> fetchCurrencies(
+      {int page = 1, CryptoType type = CryptoType.all}) async {
     final headers = {'X-CMC_PRO_API_KEY': DotEnv().env['COIN_MARKET_API_KEY']};
+    String cryptoType;
+    switch (type) {
+      case CryptoType.coins:
+        cryptoType = "coins";
+        break;
+      case CryptoType.tokens:
+        cryptoType = "tokens";
+        break;
+      case CryptoType.all:
+        {
+          cryptoType = "all";
+        }
+    }
     final url = Uri.https(
         "pro-api.coinmarketcap.com", "/v1/cryptocurrency/listings/latest", {
       "limit": pageSize.toString(),
-      "start": (pageSize * (page - 1) + 1).toString()
+      "start": (pageSize * (page - 1) + 1).toString(),
+      "cryptocurrency_type": cryptoType
     });
     final response = await http.get(url.toString(), headers: headers);
     final responseBody = jsonDecode(response.body);
@@ -33,7 +48,7 @@ class ProdCryptoRepository implements CryptoRepository {
 
     final body = (responseBody['data'] as List<dynamic>);
 
-    if (body.length < page * page) {
+    if (body.length < pageSize) {
       _allCurrenciesLoaded = true;
     }
 

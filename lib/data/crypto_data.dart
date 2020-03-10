@@ -12,14 +12,15 @@ class Crypto {
   Crypto.fromJSON(Map<String, dynamic> map)
       : id = map['id'],
         name = map['name'],
-        price = map['quote']['USD']['price'],
-        percentChange = map['quote']['USD']['percent_change_1h'],
+        // https://stackoverflow.com/questions/26417782/in-dart-is-there-a-quick-way-to-convert-int-to-double
+        price = map['quote']['USD']['price'] + .0,
+        percentChange = map['quote']['USD']['percent_change_1h'] + .0,
         symbol = map['symbol'];
 }
 
 abstract class CryptoRepository {
   bool get allCurrenciesLoaded;
-  Future<List<Crypto>> fetchCurrencies({int page});
+  Future<List<Crypto>> fetchCurrencies({int page, CryptoType type});
 }
 
 class FetchDataException implements Exception {
@@ -33,3 +34,5 @@ class FetchDataException implements Exception {
     return 'Exception: $_message';
   }
 }
+
+enum CryptoType { all, coins, tokens }

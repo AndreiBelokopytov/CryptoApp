@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'bloc/currencies_bloc.dart';
 import 'bottom_loader.dart';
 import 'crypto_list_item.dart';
@@ -44,35 +45,43 @@ class CurrenciesListState extends State<CurrenciesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          child: _getFilter(),
-        ),
-        Positioned.fill(top: _chipsHeight, child: _getList())
+    final state = widget.currenciesState;
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: <Widget>[
+        _getFilter(),
+        _getList(),
+        if (state is CurrenciesLoaded && state.loading)
+          SliverList(
+            delegate: SliverChildListDelegate(<Widget>[BottomLoader()]),
+          )
       ],
     );
   }
 
   Widget _getFilter() {
     const spacer = SizedBox(width: 16);
-    return Container(
-      height: _chipsHeight,
-      color: Colors.grey[50],
-      child: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          _getChip(CryptoType.all),
-          spacer,
-          _getChip(CryptoType.coins),
-          spacer,
-          _getChip(CryptoType.tokens),
-        ],
-      ),
+
+    return SliverAppBar(
+      floating: false,
+      pinned: false,
+      snap: false,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Container(
+          height: _chipsHeight,
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            children: <Widget>[
+              _getChip(CryptoType.all),
+              spacer,
+              _getChip(CryptoType.coins),
+              spacer,
+              _getChip(CryptoType.tokens),
+            ],
+          )),
     );
   }
 
@@ -100,20 +109,19 @@ class CurrenciesListState extends State<CurrenciesList> {
 
   Widget _getList() {
     final state = widget.currenciesState;
-
     if (state is CurrenciesLoaded) {
-      return ListView.builder(
-        itemCount: state.allCurrenciesLoaded
-            ? state.currencies.length
-            : state.currencies.length + 1,
-        itemBuilder: (context, index) => index >= state.currencies.length
-            ? BottomLoader()
-            : _getRowWithDivider(index),
-        controller: _scrollController,
+      return SliverFixedExtentList(
+        itemExtent: 96,
+        delegate: SliverChildBuilderDelegate(
+            (context, index) => _getRowWithDivider(index),
+            childCount: state.currencies.length),
       );
     } else {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
   }
@@ -128,7 +136,7 @@ class CurrenciesListState extends State<CurrenciesList> {
         favorite: favorites.contains(currency.id),
         onToggleFavorite: widget.onToggleFavorite,
       ),
-      const Divider(height: 5.0),
+      const Divider(height: 4),
     ];
 
     return Column(
@@ -144,7 +152,6 @@ class CurrenciesListState extends State<CurrenciesList> {
   void _onScroll() {
     final state = widget.currenciesState;
     final onLoadNextPage = widget.onLoadNextPage;
-
     if (state is CurrenciesLoaded) {
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;

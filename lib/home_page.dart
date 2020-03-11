@@ -20,6 +20,7 @@ class HomePage extends StatelessWidget {
                 currenciesState: currenciesState, favorites: favorites)),
         builder: (context, snapshot) {
           return Scaffold(
+              backgroundColor: Colors.white,
               appBar: AppBar(
                 title: Text("Crypto App"),
                 elevation:

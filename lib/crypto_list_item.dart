@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'crypto_page.dart';
 import 'currencies_list.dart';
 import 'data/crypto_data.dart';
 
@@ -64,7 +65,8 @@ class CryptoListItem extends StatelessWidget {
         favorite ? Icons.star : Icons.star_border,
         color: favorite ? Colors.amber : null,
       ),
-      onTap: () => onToggleFavorite(currency.id),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CryptoPage(currency))),
       isThreeLine: true,
     );
   }

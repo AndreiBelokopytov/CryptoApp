@@ -11,6 +11,7 @@ dependencies:
   cached_network_image: ^2.0.0
   rxdart: ^0.23.1
   http: any
+  get_it: ^4.0.0
 
 dev_dependencies:
   effective_dart: ^1.0.0

@@ -4,14 +4,20 @@ import 'package:rxdart/rxdart.dart';
 import 'bloc/currencies_bloc.dart';
 import 'bloc/favorites_bloc.dart';
 import 'currencies_list.dart';
-import 'providers/bloc_provider.dart';
+import 'service_locator.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+
+  @override
+  State createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  final CurrenciesBloc currenciesBloc = sl<CurrenciesBloc>();
+  final FavoritesBloc favoritesBloc = sl<FavoritesBloc>();
+
   @override
   Widget build(BuildContext context) {
-    final currenciesBloc = BlocProvider.of<CurrenciesBloc>(context);
-    final favoritesBloc = BlocProvider.of<FavoritesBloc>(context);
-
     return StreamBuilder<HomePageStreamSnapshot>(
         stream: CombineLatestStream.combine2(
             currenciesBloc.state,
@@ -37,6 +43,20 @@ class HomePage extends StatelessWidget {
                     )
                   : null);
         });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    currenciesBloc.init();
+    favoritesBloc.init();
+  }
+
+  @override
+  void dispose() {
+    currenciesBloc.dispose();
+    favoritesBloc.dispose();
+    super.dispose();
   }
 }
 

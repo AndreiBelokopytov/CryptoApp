@@ -3,12 +3,11 @@ import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import '../bloc/bloc.dart';
 import '../data/crypto_data.dart';
-import '../dependency_injection.dart';
 
 class CurrenciesBloc implements Bloc {
   static const _defaultType = CryptoType.all;
 
-  final CryptoRepository _repository;
+  final CryptoRepository repository;
   final _currenciesController = BehaviorSubject<CurrenciesState>.seeded(
       CurrenciesUninitialized(_defaultType));
   final _pageController = StreamController<int>();
@@ -18,7 +17,7 @@ class CurrenciesBloc implements Bloc {
   Sink<int> get page => _pageController.sink;
   Sink<CryptoType> get type => _typeController.sink;
 
-  CurrenciesBloc() : _repository = Injector().cryptoRepository;
+  CurrenciesBloc(this.repository);
 
   @override
   void init() {
@@ -52,7 +51,7 @@ class CurrenciesBloc implements Bloc {
 
     try {
       currencies =
-          await _repository.fetchCurrencies(page: page, type: lastState.type);
+          await repository.fetchCurrencies(page: page, type: lastState.type);
     } on FetchDataException catch (e) {
       print(e);
       // TODO: handle exception
@@ -65,7 +64,7 @@ class CurrenciesBloc implements Bloc {
         ],
         page: page,
         type: lastState.type,
-        allCurrenciesLoaded: _repository.allCurrenciesLoaded));
+        allCurrenciesLoaded: repository.allCurrenciesLoaded));
   }
 
   Future<void> _refreshCurrencies(CryptoType type) async {
@@ -74,7 +73,7 @@ class CurrenciesBloc implements Bloc {
     _currenciesController.add(CurrenciesUninitialized(type));
 
     try {
-      currencies = await _repository.fetchCurrencies(type: type);
+      currencies = await repository.fetchCurrencies(type: type);
     } on FetchDataException catch (e) {
       print(e);
       //TODO: handle exception
@@ -83,7 +82,7 @@ class CurrenciesBloc implements Bloc {
     _currenciesController.add(CurrenciesLoaded(
         currencies: currencies,
         page: 1,
-        allCurrenciesLoaded: _repository.allCurrenciesLoaded,
+        allCurrenciesLoaded: repository.allCurrenciesLoaded,
         type: type
     ));
   }

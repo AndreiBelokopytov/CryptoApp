@@ -15,13 +15,21 @@ class CryptoPage extends StatefulWidget {
 
 class CryptoPageState extends State<CryptoPage> {
   final FavoritesBloc favoritesBloc = sl<FavoritesBloc>();
+  final OHLCVBloc ohlcvBloc = sl<OHLCVBloc>();
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: favoritesBloc.favorites,
+    return StreamBuilder<CryptoPageSnapshot>(
+      stream: CombineLatestStream.combine2(
+        favoritesBloc.favorites,
+        ohlcvBloc.state,
+        (favorites, ohlcv) => CryptoPageSnapshot(favorites, ohlcv)
+      ),
       builder: (context, snapshot) {
-        final isFavorite = snapshot.data.contains(widget.currency.id);
+        if (!snapshot.hasData) {
+          return null;
+        }
+        final isFavorite = snapshot.data.favorites.contains(widget.currency.id);
         return Scaffold(
           appBar: AppBar(
             title: Column(
@@ -63,11 +71,20 @@ class CryptoPageState extends State<CryptoPage> {
 
   @override
   void initState() {
+    super.initState();
     favoritesBloc.init();
   }
 
   @override
   void dispose() {
     favoritesBloc.dispose();
+    super.dispose();
   }
+}
+
+class CryptoPageSnapshot {
+  final Set<int> favorites;
+  final OHLCVState ohlcvState;
+
+  CryptoPageSnapshot(this.favorites, this.ohlcvState);
 }

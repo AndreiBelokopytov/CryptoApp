@@ -61,7 +61,10 @@ class CryptoPageState extends State<CryptoPage> {
               ? Container(
                   child: Column(
                     children: <Widget>[
-                      CryptoPageSummary(widget.currency),
+                      if (ohlcvState is OHLCVStateLoaded)
+                        CryptoPageSummary(
+                            currency: widget.currency,
+                            ohlcvData: ohlcvState.ohlcvData),
                       if (ohlcvState is OHLCVStateLoaded)
                         Padding(
                           padding: EdgeInsets.only(top: 24),

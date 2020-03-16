@@ -1,6 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' show DateFormat;
+import 'package:rxdart/rxdart.dart';
+import 'bloc/favorites_bloc.dart';
+import 'bloc/ohlcv_bloc.dart';
+import 'candlestick_chart.dart';
+import 'crypto_page_summary.dart';
 import 'data/crypto_data.dart';
 import 'service_locator.dart';
 
@@ -21,16 +27,15 @@ class CryptoPageState extends State<CryptoPage> {
   Widget build(BuildContext context) {
     return StreamBuilder<CryptoPageSnapshot>(
       stream: CombineLatestStream.combine2(
-        favoritesBloc.favorites,
-        ohlcvBloc.state,
-        (favorites, ohlcv) => CryptoPageSnapshot(favorites, ohlcv)
-      ),
+          favoritesBloc.favorites,
+          ohlcvBloc.state,
+          (favorites, ohlcvState) => CryptoPageSnapshot(favorites, ohlcvState)),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return null;
-        }
-        final isFavorite = snapshot.data.favorites.contains(widget.currency.id);
+        final favorites = snapshot.data?.favorites ?? <int>{};
+        final ohlcvState = snapshot.data?.ohlcvState;
+        final isFavorite = favorites.contains(widget.currency.id);
         return Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,31 +44,39 @@ class CryptoPageState extends State<CryptoPage> {
               ],
             ),
             actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  isFavorite ? Icons.star : Icons.star_border,
-                  color: Colors.white,
-                ),
-                tooltip: "Add to favorites",
-                onPressed: () =>
-                    favoritesBloc.favoriteItem.add(widget.currency.id),
-              )
+              if (snapshot.hasData)
+                IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.star : Icons.star_border,
+                    color: Colors.white,
+                  ),
+                  tooltip: "Add to favorites",
+                  onPressed: () =>
+                      favoritesBloc.favoriteItem.add(widget.currency.id),
+                )
             ],
             elevation: defaultTargetPlatform == TargetPlatform.iOS ? 0.0 : 5.0,
           ),
-          body: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    CryptoPageSummary(widget.currency),
-                  ],
+          body: snapshot.hasData
+              ? Container(
+                  child: Column(
+                    children: <Widget>[
+                      CryptoPageSummary(widget.currency),
+                      if (ohlcvState is OHLCVStateLoaded)
+                        Padding(
+                          padding: EdgeInsets.only(top: 24),
+                          child: CandlestickChart(
+                            width: MediaQuery.of(context).size.width,
+                            height: 320,
+                            data: ohlcvState.ohlcvData,
+                            xAxisFormat: DateFormat.Hm(),
+                            ticksCount: 6,
+                          ),
+                        )
+                    ],
+                  ),
                 )
-              ],
-            ),
-          ),
+              : null,
         );
       },
     );
@@ -73,11 +86,13 @@ class CryptoPageState extends State<CryptoPage> {
   void initState() {
     super.initState();
     favoritesBloc.init();
+    ohlcvBloc.init();
   }
 
   @override
   void dispose() {
     favoritesBloc.dispose();
+    ohlcvBloc.dispose();
     super.dispose();
   }
 }
